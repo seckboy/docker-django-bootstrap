@@ -10,3 +10,4 @@ from .models import Entity
 def index(request):
     entity = Entity.objects.all().first();
     return render(request, 'index.html', {"rock1":"test", "entity":entity.value_text})
+    # return render(request, 'index.html', {"rock1":"test", "entity":"entity"})
