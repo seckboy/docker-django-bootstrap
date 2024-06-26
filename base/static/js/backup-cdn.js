@@ -1,13 +1,30 @@
 function setRemoteElementWithLocalBackup(elementConfig) {
-    let element=
-        elementConfig.remote.match(/.*css$/) ? setLink(elementConfig.remote)
-            : setScript(elementConfig.remote);
-    element.onload =  elementConfig.testScript;
-    element.onerror = elementConfig.testScript;
+    let element= setElement(elementConfig.remote);
+    element.onload =  setTest(elementConfig);
+    element.onerror = setTest(elementConfig);
 }
 
+function isCSSLink(destination){
+    return destination.match(/.*css$/);
+}
+
+function setElement(destination) {
+     if(isCSSLink(destination)){
+         return setLink(destination);
+     }else{
+         return setScript(destination);
+     }
+}
+
+ function setTest(elementConfig, testType){
+    return function() {
+        if (!elementConfig.testScript()) {
+            setElement(elementConfig.local)
+        }
+    }
+ }
+
 function setLink(linkTarget){
-    console.log("setting link " + linkTarget);
     let link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
@@ -17,7 +34,6 @@ function setLink(linkTarget){
 }
 
 function setScript(scriptTarget){
-    console.log("setting script " + scriptTarget);
     let script = document.createElement('script');
     script.src = scriptTarget;
     document.body.appendChild(script);
